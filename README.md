@@ -136,7 +136,7 @@ a teljes Google Cloud-beállítás.
    Ha az appban már vannak adatok: **Adatok → „Bejelentkezés Google-lel és szinkron bekapcsolása”**.
 3. A Google-ablakban válaszd ki a fiókot, és engedélyezd. Ha jelölőnégyzeteket látsz
    (Drive-alkalmazásadatok, Drive-fájlok), mindkettőt jelöld be.
-   Ha „A Google nem ellenőrizte ezt az alkalmazást” ablak jön: **Speciális → Ugrás a(z) … oldalra (nem biztonságos)**.
+   Ha „A Google nem ellenőrizte ezt az alkalmazást” ablak jön: **Folytatás** (régebben: Speciális → Ugrás a(z) … oldalra).
    Ez a saját, nem hitelesített appod miatt van, nem hiba.
 4. Az app letölti a Drive-on lévő adatokat. A fejléc ☁ gombja zöld lesz.
 
@@ -146,7 +146,9 @@ Ha az ütközés-ablak jön („Melyik adat maradjon?”), és ez egy új eszkö
 
 Minden Google-fióknak saját, üres app-mappája van: az adatok nem jönnek át maguktól.
 
-1. Ha a Google Cloud-projekt „Tesztelés” állapotban van, az új fiókot fel kell venni tesztfelhasználónak:
+1. A KIADOK projekt (emlékezet szerint) **„In production”** állapotban van: ekkor bármelyik Google-fiók
+   bejelentkezhet (a „nem ellenőrzött app” ablakkal), ez a lépés kihagyható.
+   Ha mégis „Testing” állapotú, az új fiókot fel kell venni tesztfelhasználónak:
    https://console.cloud.google.com → felül a **KIADOK** projekt kiválasztása → **Google Auth Platform → Audience**
    (régebbi felületen: APIs & Services → OAuth consent screen) → **Test users → Add users** → az új e-mail-cím → Save.
    *Cél:* különben a Google az új fiókkal „hozzáférés letiltva” hibát ad.
@@ -183,10 +185,8 @@ A console.cloud.google.com-on, a saját Google-fiókoddal:
    üres, ezért az első eszközön, ahol az adatok vannak, kezdd.
 
 Tudnivalók:
-- A Client ID nem titkos, mehet a GitHubra. A Google Cloudban letölthető **client_secret…json**
+- A Client ID nem titkos, mehet a GitHubra. A mostani a `js/drive-sync.js` elején van (`…jgdlc8ase2.apps.googleusercontent.com`). A Google Cloudban letölthető **client_secret…json**
   fájlra az appnak **nincs szüksége** – az soha ne kerüljön a JT_OFFICE mappába és a GitHubra.
-- A „Testing” állapotban a Google 7 nap után lejárathatja a bejelentkezést; ilyenkor elég újra
-  bejelentkezni a ☁ gombbal.
 - Az Android APK-változatban (Capacitor) a Google-bejelentkezés nem működik, ott a Quick Share a szinkron.
 
 ## Módosításkor
