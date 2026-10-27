@@ -124,6 +124,71 @@ Google Drive for desktop nélkül. Egyetlen fájl van: `kiadok-adatok.json` a Dr
 
 A kézi mentés (.json letöltés / megosztás / betöltés) biztonsági pillanatképnek megmaradt.
 
+### A Drive összekötése lépésről lépésre
+
+Három eset van. Az elsőhöz semmi nem kell a Google Cloudban, a másodikhoz egy beállítás, a harmadikhoz
+a teljes Google Cloud-beállítás.
+
+**1. Új eszköz vagy újratelepítés, ugyanazzal a Google-fiókkal (a leggyakoribb)**
+
+1. Nyisd meg a https://jtvilaga.github.io/jt_office/ címet Chrome-ban, és telepítsd az appot.
+2. Üres appban az üdvözlő képernyőn: **„☁ Google Drive-ról (szinkron)”**.
+   Ha az appban már vannak adatok: **Adatok → „Bejelentkezés Google-lel és szinkron bekapcsolása”**.
+3. A Google-ablakban válaszd ki a fiókot, és engedélyezd. Ha jelölőnégyzeteket látsz
+   (Drive-alkalmazásadatok, Drive-fájlok), mindkettőt jelöld be.
+   Ha „A Google nem ellenőrizte ezt az alkalmazást” ablak jön: **Speciális → Ugrás a(z) … oldalra (nem biztonságos)**.
+   Ez a saját, nem hitelesített appod miatt van, nem hiba.
+4. Az app letölti a Drive-on lévő adatokat. A fejléc ☁ gombja zöld lesz.
+
+Ha az ütközés-ablak jön („Melyik adat maradjon?”), és ez egy új eszköz: **„Felhőből betöltöm”**.
+
+**2. Másik Google-fiók (másik Drive) használata**
+
+Minden Google-fióknak saját, üres app-mappája van: az adatok nem jönnek át maguktól.
+
+1. Ha a Google Cloud-projekt „Tesztelés” állapotban van, az új fiókot fel kell venni tesztfelhasználónak:
+   https://console.cloud.google.com → felül a **KIADOK** projekt kiválasztása → **Google Auth Platform → Audience**
+   (régebbi felületen: APIs & Services → OAuth consent screen) → **Test users → Add users** → az új e-mail-cím → Save.
+   *Cél:* különben a Google az új fiókkal „hozzáférés letiltva” hibát ad.
+2. Azon az eszközön, ahol a teljes, friss adat van: **Adatok → „Szinkron kikapcsolása”**.
+   *Cél:* a régi fiók bejelentkezését elfelejti. Az adatok az appban megmaradnak.
+3. Ugyanott: **„Bejelentkezés Google-lel és szinkron bekapcsolása”** → az új fiók kiválasztása.
+   Az új fiók Drive-ja üres, ezért az app feltölti az itteni adatokat.
+4. A többi eszközön ugyanígy: szinkron kikapcsolása, majd bekapcsolás az új fiókkal → „Felhőből betöltöm”.
+
+A régi fiók Drive-ján lévő adat ott marad; nem zavar, de kézzel nem látszik (rejtett app-mappa).
+A régi fiók **JT_Office mentések** mappája viszont látható, azt kézzel törölheted, ha már nem kell.
+
+**3. Ha a Google Cloud-projekt vagy a Client ID elveszett (új beállítás a nulláról)**
+
+Csak akkor kell, ha a `js/drive-sync.js`-ben lévő Client ID már nem működik (pl. a projektet törölted).
+A console.cloud.google.com-on, a saját Google-fiókoddal:
+
+1. **Új projekt** (felül a projektválasztó → New project), név pl. `JT_Office`.
+2. **APIs & Services → Library → „Google Drive API” → Enable.** *Cél:* az app elérheti a Drive-ot.
+3. **Google Auth Platform → Branding / Audience** (régebbi felületen: OAuth consent screen):
+   - User type: **External**, app neve pl. `JT_Office`, a támogatási és a fejlesztői e-mail a sajátod.
+   - Publishing status: maradhat **Testing**; a **Test users** közé vedd fel a saját fiókodat
+     (és minden fiókot, amivel használni akarod).
+4. **Google Auth Platform → Data access → Add or remove scopes:** `.../auth/drive.appdata` és `.../auth/drive.file` → Save.
+   *Cél:* a szinkronfájl és a mentések mappája.
+5. **Google Auth Platform → Clients → Create client** (régebbi felületen: Credentials → Create credentials → OAuth client ID):
+   - Application type: **Web application**
+   - **Authorized JavaScript origins:** `https://jtvilaga.github.io`
+     (helyi próbához pluszban: `http://localhost:8000`)
+   - Redirect URI nem kell.
+   - Create → a megjelenő **Client ID**-t másold ki (`….apps.googleusercontent.com`).
+6. Írd be a `js/drive-sync.js` elején a `CLIENT_ID: "…"` sorba, és futtasd a `github-JT_OFFICE.bat`-ot.
+7. Ezután minden eszközön az 1. eset szerint kapcsold be a szinkront. Az új projekt Drive-mappája
+   üres, ezért az első eszközön, ahol az adatok vannak, kezdd.
+
+Tudnivalók:
+- A Client ID nem titkos, mehet a GitHubra. A Google Cloudban letölthető **client_secret…json**
+  fájlra az appnak **nincs szüksége** – az soha ne kerüljön a JT_OFFICE mappába és a GitHubra.
+- A „Testing” állapotban a Google 7 nap után lejárathatja a bejelentkezést; ilyenkor elég újra
+  bejelentkezni a ☁ gombbal.
+- Az Android APK-változatban (Capacitor) a Google-bejelentkezés nem működik, ott a Quick Share a szinkron.
+
 ## Módosításkor
 
 1. Módosítsd a fájlokat. A verziót **ne kézzel** emeld.
