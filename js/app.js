@@ -1,5 +1,5 @@
 // A VERZIO sort a JT App kreátor szúrta be; az app-update.bat ezt emeli.
-const VERZIO = '1.03';
+const VERZIO = '1.04';
 
 /* ==================================================================
    app.js – indítás, nézetváltás (#naptar, #kiadasok, …), telepítés

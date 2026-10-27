@@ -2,8 +2,11 @@
    drive-sync.js – közvetlen szinkron a Google Drive-val
    - Egyetlen fájl: kiadok-adatok.json a Drive rejtett "appDataFolder"
      mappájában. Csak ez az app látja, nem keverhető össze más fájlokkal.
-   - Bejelentkezés: Google Identity Services (GIS), csak a drive.appdata
-     jogosultsággal (a Drive többi fájljához nem fér hozzá).
+   - Bejelentkezés: Google Identity Services (GIS), a drive.appdata és a
+     drive.file jogosultsággal. A drive.file csak az app saját fájljait látja
+     (a teljes mentések mappáját), a Drive többi fájljához nem fér hozzá.
+   - Teljes mentés (.zip): ha a szinkron be van kapcsolva, a Drive látható
+     "JT_Office mentések" mappájába is felkerül; az utolsó MENTES_DB marad meg.
    - A Google hozzáférési kulcsa (token) kb. 1 óráig érvényes; utána egy
      kattintás kell a fejlécben lévő ☁ gombra.
 
@@ -15,8 +18,11 @@
    ================================================================== */
 const D = {
     CLIENT_ID: "34774312699-a85i32hssmt7u9cf3bc3tvjgdlc8ase2.apps.googleusercontent.com",
-    SCOPE: "https://www.googleapis.com/auth/drive.appdata",
+    SCOPE: "https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file",
     FAJLNEV: "kiadok-adatok.json",
+    MENTES_MAPPA: "JT_Office mentések",
+    MENTES_DB: 10,          // ennyi teljes mentés marad meg a Drive-on
+    scope: "",              // a ténylegesen megadott jogosultságok
     token: null,
     lejar: 0,
     allapotKod: "ki",       // ki | bejelentkezes | folyamatban | ok | hiba | offline
@@ -35,7 +41,7 @@ D.betolt = async function () {
     // a token egy órán át újraindítás után is használható
     try {
         const t = JSON.parse(localStorage.getItem("kiadokDriveToken") || "null");
-        if (t && t.lejar > Date.now() + 60000) { D.token = t.token; D.lejar = t.lejar; }
+        if (t && t.lejar > Date.now() + 60000) { D.token = t.token; D.lejar = t.lejar; D.scope = t.scope || ""; }
     } catch (e) { /* nincs localStorage – nem baj */ }
 };
 D.ment = function () { return S.dbSet("driveSync", D.beallitas); };
@@ -56,6 +62,8 @@ D._gisBetolt = function () {
 };
 
 D.tokenErvenyes = function () { return !!D.token && D.lejar > Date.now() + 60000; };
+/* Van-e érvényes bejelentkezés a mentések mappájához is (drive.file) */
+D.mentesJog = function () { return D.tokenErvenyes() && D.scope.indexOf("auth/drive.file") >= 0; };
 
 /* Bejelentkezés – csak felhasználói kattintásból hívható (különben a böngésző letiltja a felugró ablakot) */
 D.bejelentkezes = async function () {
@@ -69,7 +77,8 @@ D.bejelentkezes = async function () {
                 if (v.error) { if (varo) varo.reject(new Error(v.error_description || v.error)); return; }
                 D.token = v.access_token;
                 D.lejar = Date.now() + (Number(v.expires_in) || 3600) * 1000;
-                try { localStorage.setItem("kiadokDriveToken", JSON.stringify({ token: D.token, lejar: D.lejar })); } catch (e) { }
+                D.scope = v.scope || "";
+                try { localStorage.setItem("kiadokDriveToken", JSON.stringify({ token: D.token, lejar: D.lejar, scope: D.scope })); } catch (e) { }
                 if (varo) varo.resolve();
             },
             error_callback: function (e) {
@@ -141,6 +150,43 @@ D._feltolt = async function (id) {
         body: torzs
     });
     return (await v.json()).id;
+};
+
+/* ---------- Teljes mentés (.zip) a Drive látható mappájába ---------- */
+D._mentesMappa = async function () {
+    const q = encodeURIComponent("name='" + D.MENTES_MAPPA + "' and mimeType='application/vnd.google-apps.folder' and trashed=false");
+    const j = await (await D._api("https://www.googleapis.com/drive/v3/files?q=" + q + "&fields=files(id)")).json();
+    if (j.files && j.files.length) return j.files[0].id;
+    const v = await D._api("https://www.googleapis.com/drive/v3/files?fields=id", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: D.MENTES_MAPPA, mimeType: "application/vnd.google-apps.folder" })
+    });
+    return (await v.json()).id;
+};
+
+/* Feltölti a zipet, és a MENTES_DB-nél régebbieket törli. Visszaadja a törölt mentések számát. */
+D.zipFeltolt = async function (blob, nev) {
+    const mappa = await D._mentesMappa();
+    const hatar = "kiadok" + Math.random().toString(36).slice(2);
+    const torzs = new Blob([
+        "--" + hatar + "\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" +
+        JSON.stringify({ name: nev, parents: [mappa] }) +
+        "\r\n--" + hatar + "\r\nContent-Type: application/zip\r\n\r\n",
+        blob,
+        "\r\n--" + hatar + "--"
+    ]);
+    await D._api("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id", {
+        method: "POST",
+        headers: { "Content-Type": "multipart/related; boundary=" + hatar },
+        body: torzs
+    });
+    const q = encodeURIComponent("'" + mappa + "' in parents and trashed=false");
+    const j = await (await D._api("https://www.googleapis.com/drive/v3/files?q=" + q +
+        "&orderBy=createdTime desc&pageSize=100&fields=files(id)")).json();
+    const regiek = (j.files || []).slice(D.MENTES_DB);
+    for (const f of regiek) await D._api("https://www.googleapis.com/drive/v3/files/" + f.id, { method: "DELETE" });
+    return regiek.length;
 };
 
 /* Egy adatállapot azonosítója: az egyedi verziójel (régebbi adatnál a módosítás ideje) */

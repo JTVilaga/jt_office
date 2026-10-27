@@ -61,7 +61,8 @@ AdatokNezet.render = async function (el) {
         "<button class='btn btn-masodlagos' id='ad-q-fogad'>📥 Fogadás</button></div>" +
         "<h4 class='alcim'>Tartalék: Google Drive szinkron (nem kötelező)</h4>" + driveBlokk +
         "<h4 class='alcim'>Teljes biztonsági mentés</h4>" +
-        "<p class='halvany kicsi'>Egy .zip fájl a Letöltésekbe: benne a teljes program és az adataid. Kicsomagolva Windowson az " +
+        "<p class='halvany kicsi'>Egy .zip fájl a Letöltésekbe: benne a teljes program és az adataid. Ha a Google Drive szinkron be van kapcsolva, " +
+        "a Drive <b>JT_Office mentések</b> mappájába is felkerül (az utolsó 10 marad meg). Kicsomagolva Windowson az " +
         "<b>index.html</b> megnyitásával GitHub és internet nélkül is elindul. Visszatöltés: „Betöltés fájlból…” (a .zip-et is elfogadja).</p>" +
         "<div class='gomb-sor'>" +
         "<button class='btn btn-masodlagos' id='ad-letolt'>Teljes mentés (.zip)</button>" +
@@ -146,6 +147,12 @@ AdatokNezet.render = async function (el) {
    így új fájlnál nem kell két helyen karbantartani. */
 AdatokNezet.letolt = async function () {
     U.toast("Mentés készül…", { ido: 10000 });
+    // Drive: a bejelentkezést most kérjük, amíg a kattintás „friss” (később a böngésző letiltaná az ablakot)
+    let drive = false;
+    if (D.beallitas.be && navigator.onLine) {
+        if (!D.mentesJog()) { try { await D.bejelentkezes(); } catch (e) { console.warn(e); } }
+        drive = D.mentesJog();
+    }
     try {
         await X.betolt();                     // a SheetJS-ben lévő CFB tud zip-et írni
         const CFB = XLSX.CFB;
@@ -178,9 +185,23 @@ AdatokNezet.letolt = async function () {
             "Figyelem: ha a Széf nincs jelszóval titkosítva, a jelszavaid olvashatóan vannak a json-ban!\r\n"));
         const d = new Date();
         const nev = "KIADOK_teljes_mentes_" + U.ma() + "_" + U.ketJegy(d.getHours()) + U.ketJegy(d.getMinutes()) + ".zip";
-        U.letolt(nev, new Blob([CFB.write(zip, { type: "array", fileType: "zip" })], { type: "application/zip" }));
+        const blob = new Blob([CFB.write(zip, { type: "array", fileType: "zip" })], { type: "application/zip" });
+        U.letolt(nev, blob);
         S.dbSet("utolsoExport", U.most());
-        U.toast("Teljes mentés letöltve: " + nev + (hiany.length ? " (hiányzott: " + hiany.join(", ") + ")" : ""), { ido: 5000 });
+        let driveUz = "";
+        if (drive) {
+            U.toast("Feltöltés a Google Drive-ra…", { ido: 20000 });
+            try {
+                const torolt = await D.zipFeltolt(blob, nev);
+                driveUz = " – a Drive-ra is felkerült (" + D.MENTES_MAPPA + (torolt ? "; " + torolt + " régi mentés törölve" : "") + ")";
+            } catch (e) {
+                console.error(e);
+                driveUz = " – a Drive-ra NEM került fel: " + e.message;
+            }
+        } else if (D.beallitas.be) {
+            driveUz = " – a Drive-ra nem került fel (nincs internet vagy bejelentkezés)";
+        }
+        U.toast("Teljes mentés letöltve: " + nev + (hiany.length ? " (hiányzott: " + hiany.join(", ") + ")" : "") + driveUz, { ido: 7000 });
     } catch (e) {
         console.error(e);
         U.uzenet("Mentés", "Nem sikerült a teljes mentés: " + e.message + "\nAz adatokat a Küldés gombbal akkor is el tudod menteni.");

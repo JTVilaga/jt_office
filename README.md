@@ -116,7 +116,11 @@ Google Drive for desktop nélkül. Egyetlen fájl van: `kiadok-adatok.json` a Dr
 - A fejléc ☁ gombja: zöld = szinkronban (utolsó idő), narancs = bejelentkezés kell
   (a Google hozzáférés kb. 1 óráig érvényes), piros = hiba.
 - Google Cloud projekt: KIADOK (a neve maradt), OAuth Web client, engedélyezett origin: `https://jtvilaga.github.io`,
-  jogosultság: `drive.appdata`. A Client ID a `js/drive-sync.js` elején van (nem titkos).
+  jogosultság: `drive.appdata` (szinkron) és `drive.file` (a teljes mentések mappája – csak az app saját fájljait látja).
+  A Client ID a `js/drive-sync.js` elején van (nem titkos).
+- **Teljes mentés (.zip):** ha a szinkron be van kapcsolva, a Letöltések mellett a Drive látható
+  **JT_Office mentések** mappájába is felkerül. Az utolsó 10 marad meg (`MENTES_DB` a `js/drive-sync.js`-ben),
+  a régebbieket az app törli. A `drive.file` engedélyt az első ilyen mentésnél egyszer jóvá kell hagyni.
 
 A kézi mentés (.json letöltés / megosztás / betöltés) biztonsági pillanatképnek megmaradt.
 
