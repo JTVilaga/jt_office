@@ -1,6 +1,6 @@
 {
-  "name": "Jt_office",
-  "short_name": "Jt_office",
+  "name": "JT_Office",
+  "short_name": "JT_Office",
   "lang": "hu",
   "start_url": "./index.html",
   "scope": "./",

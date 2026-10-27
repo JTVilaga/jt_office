@@ -1,5 +1,5 @@
 // A VERZIO sort a JT App kreátor szúrta be; az app-update.bat ezt emeli.
-const VERZIO = '1.05';
+const VERZIO = '1.06';
 
 /* ==================================================================
    app.js – indítás, nézetváltás (#naptar, #kiadasok, …), telepítés
@@ -33,7 +33,7 @@ A.frissit = function () {
     const el = document.getElementById("nezet");
     const gorgetes = ujNezet ? 0 : window.scrollY;
     document.getElementById("nezet-cim").textContent = nezet.cim;
-    document.title = nezet.cim + " – KIADOK";
+    document.title = nezet.cim + " – JT_Office";
     el.className = "nezet-" + nev;
     const r = nezet.render(el);
     const vissza = function () { window.scrollTo(0, gorgetes); };

@@ -4,7 +4,7 @@ Office nélkül működik Windowson és Androidon (Chrome / Edge). Telepíthető
 
 - **Cím:** https://jtvilaga.github.io/jt_office/
 - **Repó:** https://github.com/JTVilaga/jt_office (nyilvános)
-- Korábbi neve **KIADOK** volt (mappa és repó: `sajat`). A belső nevek szándékosan maradtak `kiadok`-ok, lásd lent: „Belső nevek”.
+- Korábbi neve **KIADOK** volt (mappa és repó: `sajat`). A belső nevek szándékosan maradtak `kiadok`-ok, lásd lent: „Belső nevek”. A látható nevek (ablakcím, fejléc, mentés- és szinkronfájlok) már JT_Office-ok; a régi `KIADOK_…` nevű mentések és szinkronfájlok ugyanúgy betölthetők.
 - A **JT AppKreator** *Új PWA projekt* oldalával készült, és azzal kompatibilis (ld. „JT AppKreator”).
 
 ## Mi hova került az Excelből
@@ -70,9 +70,9 @@ weboldalán ne tölts fel fájlt.
 
 **A repó nyilvános: az egész mappa felkerül, kivéve amit a `.gitignore` kizár.** Ezért:
 
-- Ebbe a mappába **ne tegyél adatot**: mentést (`.zip`), `kiadok-adatok.json`-t, `KIADOK_…` szinkronfájlt,
+- Ebbe a mappába **ne tegyél adatot**: mentést (`.zip`), `kiadok-adatok.json`-t, `JT_Office_…` vagy régi `KIADOK_…` szinkronfájlt,
   `S_KIADOK.xlsm`-et vagy más saját fájlt. A Széf és a jelszavak ezekben vannak.
-- A `.gitignore` ezeket kizárja: `kiadok-adatok*`, `*.xlsm`, `*.zip`, `KIADOK_*`, `github-*.bat`, `verzio.ps1`.
+- A `.gitignore` ezeket kizárja: `kiadok-adatok*`, `*.xlsm`, `*.zip`, `KIADOK_*`, `JT_Office_*`, `github-*.bat`, `verzio.ps1`.
   Ami ennél másképp nevű, az felkerül.
 - Ha mégis felkerült valami: a fájl kivétele után a GitHub előzményeiben megmarad. Ilyenkor a repót a
   GitHubon törölni kell (Settings → Danger Zone → Delete this repository), a helyi rejtett `.git` mappát is,
@@ -95,7 +95,7 @@ Szerver és felhő nélkül (`js/kuldes.js`). A fejléc **⇄ Szinkron** gombja:
 
 - **Küldés** – azon az eszközön, ahol utoljára szerkesztettél.
   - Telefon: megosztás menü → Quick Share → a laptop.
-  - Windows: a fájl a Letöltésekbe kerül (`KIADOK_PC_ÉÉÉÉ-HH-NN_ÓÓPP.json`) → húzd rá a megnyitott Quick Share ablakára → a telefon.
+  - Windows: a fájl a Letöltésekbe kerül (`JT_Office_PC_ÉÉÉÉ-HH-NN_ÓÓPP.json`) → húzd rá a megnyitott Quick Share ablakára → a telefon.
     (A jobb klikk menü „Küldés Quick Share-rel” pontja Windows 11-en gyakran csak a „További lehetőségek megjelenítése” alatt van, vagy hiányzik.)
 - **Fogadás** – a másikon: kiválasztod a kapott fájlt; az app megmutatja, melyik adat az újabb, és szól, ha régebbit töltenél be.
 - A narancs pötty a ⇄ gombon: ezen az eszközön van el nem küldött módosítás. Ha a Google Drive szinkron is be van

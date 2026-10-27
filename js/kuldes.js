@@ -4,7 +4,7 @@
    közvetlen WiFi) átküldesz a másik eszközre.
    Fogadás: a kapott fájl betöltése – előtte megmutatja, melyik az újabb.
 
-   A fájl neve pl.: KIADOK_PC_2026-10-19_1345.json (telefonon .txt, mert az
+   A fájl neve pl.: JT_Office_PC_2026-10-19_1345.json (telefonon .txt, mert az
    Android megosztás .json-t nem enged – a tartalom ugyanaz).
    ================================================================== */
 const Q = {};
@@ -42,7 +42,7 @@ Q.gombFrissit = async function () {
 
 Q.fajlnev = function () {
     const d = new Date();
-    return "KIADOK_" + Q.eszkoz + "_" + U.ma() + "_" + U.ketJegy(d.getHours()) + U.ketJegy(d.getMinutes()) +
+    return "JT_Office_" + Q.eszkoz + "_" + U.ma() + "_" + U.ketJegy(d.getHours()) + U.ketJegy(d.getMinutes()) +
         (Q.android ? ".txt" : ".json");
 };
 
@@ -66,7 +66,7 @@ Q.kuld = async function () {
         const f = new File([Q.tartalom()], nev, { type: "text/plain" });
         if (navigator.canShare && navigator.canShare({ files: [f] })) {
             try {
-                await navigator.share({ files: [f], title: "KIADOK adatok" });
+                await navigator.share({ files: [f], title: "JT_Office adatok" });
                 await Q._kuldesKesz();
                 U.toast("Elküldve. A gépen: ⇄ → Fogadás.");
             } catch (e) {
@@ -86,7 +86,7 @@ Q.kuld = async function () {
             "<li>Nyisd meg a Letöltések mappát (Chrome-ban: Ctrl+J → „Megjelenítés mappában”).</li>" +
             "<li>Nyisd meg a <b>Quick Share</b> programot, és <b>húzd rá a fájlt</b> az ablakára → válaszd a telefont. " +
             "<span class='halvany'>(A jobb klikk menüben is lehet „Küldés Quick Share-rel”, Windows 11-en a „További lehetőségek megjelenítése” alatt.)</span></li>" +
-            "<li>A telefonon a KIADOK appban: <b>⇄ → Fogadás</b>, és válaszd ki a kapott fájlt.</li>" +
+            "<li>A telefonon a JT_Office appban: <b>⇄ → Fogadás</b>, és válaszd ki a kapott fájlt.</li>" +
             "</ol>",
         gombok: [{ felirat: "Rendben", osztaly: "btn-elsodleges" }]
     });
@@ -98,7 +98,7 @@ Q.fogad = async function () {
     if (!f) return;
     let obj;
     try { obj = S.jsonEllenoriz(JSON.parse(await f.text())); }
-    catch (e) { U.uzenet("Hibás fájl", "Ez nem KIADOK adatfájl.\n" + e.message); return; }
+    catch (e) { U.uzenet("Hibás fájl", "Ez nem JT_Office adatfájl.\n" + e.message); return; }
 
     const kuld = obj.kuldes || null;
     delete obj.kuldes;

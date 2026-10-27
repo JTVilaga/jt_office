@@ -10,7 +10,7 @@
     + 'z-index:99999;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:calc(100vw - 32px);font:600 15px system-ui,sans-serif;';
   var gomb = document.createElement('button');
   gomb.type = 'button';
-  gomb.textContent = '📲 Jt_office telepítése';
+  gomb.textContent = '📲 JT_Office telepítése';
   gomb.setAttribute('aria-label', 'Az app telepítése erre az eszközre');
   gomb.style.cssText = alap + 'display:none;padding:12px 20px;border:0;border-radius:999px;background:#0b4a8f;color:#fff;font-size:16px;cursor:pointer;';
   var uzenet = function (szoveg) {

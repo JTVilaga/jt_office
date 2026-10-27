@@ -170,13 +170,13 @@ AdatokNezet.letolt = async function () {
             try {
                 const v = await fetch(ut, { cache: "no-store" });
                 if (!v.ok) throw new Error(v.status);
-                CFB.utils.cfb_add(zip, "KIADOK/" + ut, new Uint8Array(await v.arrayBuffer()));
+                CFB.utils.cfb_add(zip, "JT_Office/" + ut, new Uint8Array(await v.arrayBuffer()));
             } catch (e) { hiany.push(ut); }
         }
         const enc = new TextEncoder();
-        CFB.utils.cfb_add(zip, "KIADOK/adatok/kiadok-adatok.json", enc.encode(S.exportJson()));
-        CFB.utils.cfb_add(zip, "KIADOK/OLVASSEL.txt", enc.encode(
-            "KIADOK teljes mentés – " + U.idopontHu(U.most()) + "\r\n\r\n" +
+        CFB.utils.cfb_add(zip, "JT_Office/adatok/kiadok-adatok.json", enc.encode(S.exportJson()));
+        CFB.utils.cfb_add(zip, "JT_Office/OLVASSEL.txt", enc.encode(
+            "JT_Office teljes mentés – " + U.idopontHu(U.most()) + "\r\n\r\n" +
             "adatok\\kiadok-adatok.json  = az adataid (ezt lehet betölteni az appba)\r\n" +
             "index.html                 = a program; kicsomagolás után Chrome-ban/Edge-ben megnyitva\r\n" +
             "                             internet és GitHub nélkül is fut (Windowson).\r\n\r\n" +
@@ -184,7 +184,7 @@ AdatokNezet.letolt = async function () {
             "Adatok → „Betöltés fájlból…” → adatok\\kiadok-adatok.json (vagy maga a .zip).\r\n\r\n" +
             "Figyelem: ha a Széf nincs jelszóval titkosítva, a jelszavaid olvashatóan vannak a json-ban!\r\n"));
         const d = new Date();
-        const nev = "KIADOK_teljes_mentes_" + U.ma() + "_" + U.ketJegy(d.getHours()) + U.ketJegy(d.getMinutes()) + ".zip";
+        const nev = "JT_Office_teljes_mentes_" + U.ma() + "_" + U.ketJegy(d.getHours()) + U.ketJegy(d.getMinutes()) + ".zip";
         const blob = new Blob([CFB.write(zip, { type: "array", fileType: "zip" })], { type: "application/zip" });
         U.letolt(nev, blob);
         S.dbSet("utolsoExport", U.most());
@@ -289,7 +289,7 @@ const UdvozloNezet = { cim: "Üdvözöllek" };
 UdvozloNezet.render = function (el) {
     el.innerHTML = "<section class='kartya keskeny-kartya kozep-szoveg udvozlo'>" +
         "<img src='ikon/ikon-192.png' alt='' width='96' height='96'>" +
-        "<h2>KIADOK</h2><p>Kiadások, naptár, napló és előjegyzés – Excel nélkül.</p>" +
+        "<h2>JT_Office</h2><p>Kiadások, naptár, napló és előjegyzés – Excel nélkül.</p>" +
         "<p class='halvany'>Még nincs adat ezen az eszközön. Honnan töltsem be?</p>" +
         "<div class='gomb-oszlop'>" +
         "<button class='btn btn-elsodleges' id='u-drive'>☁ Google Drive-ról (szinkron)</button>" +
@@ -301,7 +301,7 @@ UdvozloNezet.render = function (el) {
         try {
             const ok = await D.elsoLetoltes();
             if (ok) { location.hash = "#naptar"; U.toast("Adatok betöltve a Google Drive-ról. A szinkron be van kapcsolva."); }
-            else U.uzenet("Nincs adat a felhőben", "A Google Drive-on még nincs KIADOK adat. Előbb azon az eszközön kapcsold be a szinkront, ahol az adataid vannak (Adatok → Google Drive szinkron), utána itt próbáld újra.");
+            else U.uzenet("Nincs adat a felhőben", "A Google Drive-on még nincs JT_Office adat. Előbb azon az eszközön kapcsold be a szinkront, ahol az adataid vannak (Adatok → Google Drive szinkron), utána itt próbáld újra.");
         } catch (e) { U.uzenet("Bejelentkezés", e.message); }
     };
     U.$("#u-json", el).onclick = async function () {

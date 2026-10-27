@@ -157,7 +157,7 @@ S.exportJson = function () {
 
 S.jsonEllenoriz = function (obj) {
     if (!obj || obj.app !== "KIADOK" || !Array.isArray(obj.kiadasok)) {
-        throw new Error("Ez nem KIADOK mentési fájl.");
+        throw new Error("Ez nem JT_Office (KIADOK) mentési fájl.");
     }
     return S.normalizal(obj);
 };
