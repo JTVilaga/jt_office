@@ -1,5 +1,5 @@
 // A VERZIO sort a JT App kreátor szúrta be; az app-update.bat ezt emeli.
-const VERZIO = '1.08';
+const VERZIO = '1.09';
 
 /* ==================================================================
    app.js – indítás, nézetváltás (#naptar, #kiadasok, …), telepítés
@@ -94,6 +94,14 @@ A.indit = async function () {
         if (ev.key === "Escape" && U.modalNyitva()) U.modalBezar();
     });
     document.getElementById("btn-telepit").onclick = A.telepit;
+
+    // Tartós tároló kérése: így a böngésző helyhiány esetén sem törölheti magától az adatokat.
+    // (A kézi „adatok törlése” ellen nem véd – arra a Drive-szinkron és a teljes mentés való.)
+    if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persisted().then(function (mar) {
+            return mar || navigator.storage.persist();
+        }).then(function (ok) { console.log("Tartós tároló:", ok ? "igen" : "nem"); }).catch(function () { });
+    }
 
     // Google Drive szinkron (ha be van kapcsolva)
     D.indit();
