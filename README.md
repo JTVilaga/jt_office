@@ -52,7 +52,6 @@ js/app.js             indítás, menü/nézetváltás; az első sora a VERZIO (p
 js/telepites.js       telepítés gomb és iPhone-tipp (a JT AppKreator tette bele)
 vendor/xlsx.full.min.js  SheetJS 0.18.5 (Excel-kezelő könyvtár)
 ikon/                 alkalmazás ikonok: ikon-192, ikon-512, ikon-maskable-512 (Android), apple-touch-icon (iPhone)
-sw-regi.js            a KIADOK régi service workere – már nem használt, törölhető
 github-JT_OFFICE.bat  feltöltés a GitHubra (verzióemeléssel) – nem kerül fel a GitHubra
 verzio.ps1            a VERZIO emelése, a bat hívja – nem kerül fel a GitHubra
 .gitignore            ami nem kerülhet fel a GitHubra

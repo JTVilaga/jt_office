@@ -151,10 +151,13 @@ AdatokNezet.letolt = async function () {
         const CFB = XLSX.CFB;
         const zip = CFB.utils.cfb_new({ root: "R" });
         const sw = await (await fetch("sw.js", { cache: "no-store" })).text();
-        const lista = (sw.match(/ASSETS_TO_CACHE\s*=\s*\[([\s\S]*?)\]/) || [, ""])[1]
-            .match(/"([^"]+)"/g).map(function (x) { return x.slice(1, -1); })
+        // A lista neve a JT AppKreator sw.js-ében FAJLOK ('...'), a régi KIADOK-osban ASSETS_TO_CACHE ("...").
+        const m = sw.match(/(?:FAJLOK|ASSETS_TO_CACHE)\s*=\s*\[([\s\S]*?)\]/);
+        if (!m) throw new Error("nem találom a fájllistát az sw.js-ben");
+        const lista = Array.from(new Set((m[1].match(/["']([^"']+)["']/g) || [])
+            .map(function (x) { return x.slice(1, -1); })
             .filter(function (x) { return x !== "./"; })
-            .concat(["sw.js", "README.md"]);
+            .concat(["sw.js", "README.md"])));
         const hiany = [];
         for (const ut of lista) {
             try {

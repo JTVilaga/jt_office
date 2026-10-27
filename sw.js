@@ -2,7 +2,7 @@
 // FONTOS: ha bármelyik fájlt módosítod, emeld meg a VERZIO értékét (az app-update.bat ezt megteszi),
 // különben a telepített app a régi fájlokat használja tovább.
 
-const VERZIO = 'jtoffice-v1.02';
+const VERZIO = 'jtoffice-v1.03';
 
 const FAJLOK = [
   './',
